@@ -1,12 +1,14 @@
 import axios from 'axios'
 import {useState, useEffect} from 'react';
+import useAuth from '../hooks/useAuth';
 
-export default function RegisterForm() {
+export default function LoginForm() {
+  
+  const {setUser} = useAuth()
+
   const [input, setInput] = useState({
     username : '',
-    password : '',
-    tel : '',
-    email : ''
+    password : ''
   })
 
   const hdlChange = e =>{
@@ -17,8 +19,15 @@ export default function RegisterForm() {
     try {
       e.preventDefault()
       // validation
-      const rs = await axios.post('http://localhost:8080/auth/registerAdmin', input)
-      console.log(rs)
+      const rs = await axios.post('http://localhost:8080/auth/loginAdmin', input)
+      console.log(rs.data.token)
+      localStorage.setItem('token', rs.data.token)
+      const rs1 = await axios.get('http://localhost:8080/auth/me', {
+        headers : { Authorization : `Bearer ${rs.data.token}`}
+      })
+      console.log(rs1.data)
+      setUser(rs1.data)
+
     } catch (err) {
       console.log(err.message)
     }
@@ -27,7 +36,7 @@ export default function RegisterForm() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-primary p-8 rounded shadow-md">
-        <h2 className="text-2xl font-bold mb-4 text-white">Register</h2>
+        <h2 className="text-2xl font-bold mb-4 text-white">Login</h2>
 
         <form onSubmit={ hdlSubmit }>
           {/* Username */}
@@ -60,36 +69,6 @@ export default function RegisterForm() {
             />
           </div>
 
-          {/* Tel */}
-          <div className="mb-4">
-            <label htmlFor="tel" className="block text-sm font-medium text-white">
-              Tel
-            </label>
-            <input
-              type="tel"
-              id="tel"
-              name="tel"
-              value={input.tel}
-              onChange={ hdlChange }
-              className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 text-black"
-            />
-          </div>
-
-          {/* Email */}
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-white">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={input.email}
-              onChange={hdlChange}
-              className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300 text-black"
-            />
-          </div>
-
           {/* Submit Button */}
           <div className='flex gap-5'>
           <button
@@ -103,7 +82,7 @@ export default function RegisterForm() {
               type="submit"
               className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
             >
-              Register
+              Login
             </button>
           </div>
         </form>

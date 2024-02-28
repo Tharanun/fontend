@@ -1,15 +1,21 @@
 import React from 'react';
-import RegisterForm from './views/registerForm';
-import Nav from './views/nav'
+import AppRouter from '../routes/AppRouter';
+import useAuth from './hooks/useAuth';
 
-function Navbar() {
+function App() {
+  const {loading} = useAuth()
+
+  if(loading){
+    return(
+      <p className="text-4xl text-primary">KUY STAD.....</p>
+    )
+  }
   return (
-    <>
-    <Nav/>
-    <RegisterForm/>
-    </>
+    <div className='min-h-screen'>
+      <AppRouter/>
+    </div>
 
   );
 }
 
-export default Navbar;
+export default App;
